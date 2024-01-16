@@ -1,6 +1,6 @@
 {
   "name": "optimize-js",
-  "version": "1.0.3",
+  "version": "2.0.8",
   "description": "Optimize initial JavaScript execution/parsing by wrapping eager functions",
   "main": "lib/index.js",
   "scripts": {
@@ -21,24 +21,27 @@
   "author": "Nolan Lawson <nolan@nolanlawson.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "acorn": "^3.3.0",
-    "concat-stream": "^1.5.1",
-    "estree-walker": "^0.3.0",
-    "magic-string": "^0.16.0",
-    "yargs": "^4.8.1"
+    "acorn": "^8.11.3",
+    "concat-stream": "^2.0.0",
+    "estree-walker": "^2.0.2",
+    "magic-string": "0.30.5",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "assert": "^1.4.1",
+    "assert": "^2.1.0",
     "denodeify": "^1.2.1",
-    "http-server": "^0.9.0",
+    "http-server": "^14.1.1",
     "istanbul": "^0.4.5",
-    "mocha": "^3.0.2",
-    "standard": "^7.1.2",
-    "uglify-js": "^2.7.0"
+    "mocha": "^10.2.0",
+    "standard": "^17.1.0",
+    "rollup": "4.9.2",
+    "uglify-js": "^3.17.4"
   },
   "files": [
-    "lib"
+    "lib",
+    "types"
   ],
+  "typings": "types/index.d.ts",
   "standard": {
     "ignore": [
       "test/cases/**",
