@@ -1,14 +1,14 @@
 /* global describe, it */
-var denodeify = require('denodeify')
-var fs = require('fs')
-var readFile = denodeify(fs.readFile)
-var optimizeJs = require('../')
-var assert = require('assert')
-var testCases = fs.readdirSync('test/cases')
-var benchmarkLibs = fs.readdirSync('benchmarks').filter(function (script) {
-  return script.indexOf('.min') === -1 &&
-    script.indexOf('.optimized') === -1 &&
-    script.indexOf('.js') !== -1
+const denodeify = require('denodeify')
+const fs = require('fs')
+const readFile = denodeify(fs.readFile)
+const optimizeJs = require('../')
+const assert = require('assert')
+const testCases = fs.readdirSync('test/cases')
+const benchmarkLibs = fs.readdirSync('benchmarks').filter(function (script) {
+  return !script.includes('.min') &&
+    !script.includes('.optimized') &&
+    script.includes('.js')
 })
 
 describe('main test suite', function () {
