@@ -2,7 +2,7 @@
 const denodeify = require('denodeify')
 const fs = require('fs')
 const readFile = denodeify(fs.readFile)
-const optimizeJs = require('../')
+const { optimizeJs, optimizeJsRollupPlugin } = require('../')
 const assert = require('assert')
 const testCases = fs.readdirSync('test/cases')
 const benchmarkLibs = fs.readdirSync('benchmarks').filter(function (script) {
@@ -13,22 +13,13 @@ const benchmarkLibs = fs.readdirSync('benchmarks').filter(function (script) {
 
 describe('main test suite', function () {
   it('test sourcemaps', function () {
-    let res = optimizeJs.run('var baz = function () { console.log("foo") }()', {
-      sourceMap: true
-    })
+    const res = optimizeJs('var baz = function () { console.log("foo") }()', { sourceMap: true })
     assert.equal(res, 'var baz = (function () { console.log("foo") })()' +
       '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxXQUFVLG1DQUFrQyJ9')
-
-    res = optimizeJs.run('function xxx() { console.log("foo") }', {
-      sourceMap: true
-    })
-    assert.equal(res, 'function xxx() { console.log("foo") }' +
-        '\n//# sourceMappingURL=data:application/json;charset=utf-8;' +
-        'base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSJ9')
   })
 
   it('test optimizeJsRollupPlugin', function () {
-    const plugin = optimizeJs.optimizeJsRollupPlugin()
+    const plugin = optimizeJsRollupPlugin()
     const bundle = {
       testJs: {
         fileName: 'test.js',
@@ -57,7 +48,7 @@ describe('main test suite', function () {
       ]).then(function (results) {
         const input = results[0]
         const expected = results[1]
-        const actual = optimizeJs.run(input)
+        const actual = optimizeJs(input)
         assert.equal(actual, expected)
       })
     })
@@ -67,7 +58,7 @@ describe('main test suite', function () {
   benchmarkLibs.forEach(function (script) {
     it('check benchmark lib ' + script, function () {
       return readFile('benchmarks/' + script, 'utf8').then(function (input) {
-        optimizeJs.run(input) // ensure no crashes
+        optimizeJs(input) // ensure no crashes
       })
     })
   })

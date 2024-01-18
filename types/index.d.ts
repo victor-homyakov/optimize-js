@@ -1,4 +1,4 @@
 import { OutputPlugin } from 'rollup';
 
 export function optimizeJsRollupPlugin(): OutputPlugin;
-export function run(String): String;
+export function optimizeJs(jsString: string, opts?: {sourceMap?: boolean}): string;
