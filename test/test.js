@@ -1,7 +1,5 @@
 /* global describe, it */
-const denodeify = require('denodeify')
 const fs = require('fs')
-const readFile = denodeify(fs.readFile)
 const { optimizeJs, optimizeJsRollupPlugin } = require('../')
 const assert = require('assert')
 const testCases = fs.readdirSync('test/cases')
@@ -43,11 +41,9 @@ describe('main test suite', function () {
   testCases.forEach(function (testCase) {
     it('test ' + testCase, function () {
       return Promise.all([
-        readFile('test/cases/' + testCase + '/input.js', 'utf8'),
-        readFile('test/cases/' + testCase + '/output.js', 'utf8')
-      ]).then(function (results) {
-        const input = results[0]
-        const expected = results[1]
+        fs.promises.readFile(`test/cases/${testCase}/input.js`, 'utf8'),
+        fs.promises.readFile(`test/cases/${testCase}/output.js`, 'utf8')
+      ]).then(function ([input, expected]) {
         const actual = optimizeJs(input)
         assert.equal(actual, expected)
       })
@@ -57,7 +53,7 @@ describe('main test suite', function () {
   // test all the benchmark libs for good measure
   benchmarkLibs.forEach(function (script) {
     it('check benchmark lib ' + script, function () {
-      return readFile('benchmarks/' + script, 'utf8').then(function (input) {
+      return fs.promises.readFile('benchmarks/' + script, 'utf8').then(function (input) {
         optimizeJs(input) // ensure no crashes
       })
     })

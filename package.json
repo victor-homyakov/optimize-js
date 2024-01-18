@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "assert": "^2.1.0",
-    "denodeify": "^1.2.1",
     "http-server": "^14.1.1",
     "istanbul": "^0.4.5",
     "mocha": "^10.2.0",
