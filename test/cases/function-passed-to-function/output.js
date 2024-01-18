@@ -1,6 +1,6 @@
-var doIt=(function doIt(fun) {
+function doIt(fun) {
   fun()
-});
+}
 doIt((function () {
   console.log('heya')
 }))

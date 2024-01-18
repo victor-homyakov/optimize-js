@@ -22,9 +22,9 @@ describe('main test suite', function () {
     res = optimizeJs.run('function xxx() { console.log("foo") }', {
       sourceMap: true
     })
-    assert.equal(res, 'var xxx=(function xxx() { console.log("foo") });' +
+    assert.equal(res, 'function xxx() { console.log("foo") }' +
         '\n//# sourceMappingURL=data:application/json;charset=utf-8;' +
-        'base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiU0FBQSJ9')
+        'base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSJ9')
   })
 
   it('test optimizeJsRollupPlugin', function () {
@@ -34,13 +34,18 @@ describe('main test suite', function () {
         fileName: 'test.js',
         code: 'function x(){}'
       },
+      testJs2: {
+        fileName: 'test2.js',
+        code: '[].concat([function(a){},function(b){}])'
+      },
       testCss: {
         fileName: 'test.css',
         code: '.root{display:block}'
       }
     }
     plugin.generateBundle({}, bundle)
-    assert.equal(bundle.testJs.code, 'var x=(function x(){});')
+    assert.equal(bundle.testJs.code, 'function x(){}')
+    assert.equal(bundle.testJs2.code, '[].concat([function(a){},function(b){}])')
     assert.equal(bundle.testCss.code, '.root{display:block}')
   })
 

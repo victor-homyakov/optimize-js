@@ -1,5 +1,5 @@
-var b=(function b() {
+function b() {
   var a = [
     !(function() {return 1;})()
   ];
-});
+}
