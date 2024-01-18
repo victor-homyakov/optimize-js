@@ -45,7 +45,7 @@ describe('main test suite', function () {
     }
     plugin.generateBundle({}, bundle)
     assert.equal(bundle.testJs.code, 'function x(){}')
-    assert.equal(bundle.testJs2.code, '[].concat([function(a){},function(b){}])')
+    assert.equal(bundle.testJs2.code, '[].concat([(function(a){}),(function(b){})])')
     assert.equal(bundle.testCss.code, '.root{display:block}')
   })
 
