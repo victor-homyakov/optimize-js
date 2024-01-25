@@ -1,6 +1,6 @@
 /* global describe, it */
 const fs = require('fs')
-const { optimizeJs, optimizeJsRollupPlugin } = require('../')
+const { optimizeJs } = require('../')
 const assert = require('assert')
 const testCases = fs.readdirSync('test/cases')
 const benchmarkLibs = fs.readdirSync('benchmarks').filter(function (script) {
@@ -16,36 +16,23 @@ describe('main test suite', function () {
       '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxXQUFVLG1DQUFrQyJ9')
   })
 
-  it('test optimizeJsRollupPlugin', function () {
-    const plugin = optimizeJsRollupPlugin()
-    const bundle = {
-      testJsIIFE: {
-        fileName: 'test.js',
-        code: 'var x=function(){}()'
-      },
-      testJsFnExpr: {
-        fileName: 'test.js',
-        code: 'var do1=function(){},do2=()=>{},dont1=function dont1(){}'
-      },
-      testJsWebpackLike1: {
-        fileName: 'test.js',
-        code: '[].concat([function(a){},b=>{},(function(c){}),(d=>{})])'
-      },
-      testJsWebpackLike2: {
-        fileName: 'test.js',
-        code: 'chunk.push([{1:function(a){},2:b=>{},x:function(a){},y:b=>{}}])'
-      },
-      testCss: {
-        fileName: 'test.css',
-        code: '.root{display:block}'
-      }
-    }
-    plugin.generateBundle({}, bundle)
-    assert.equal(bundle.testJsIIFE.code, 'var x=(function(){})()')
-    assert.equal(bundle.testJsFnExpr.code, 'var do1=(function(){}),do2=(()=>{}),dont1=function dont1(){}')
-    assert.equal(bundle.testJsWebpackLike1.code, '[].concat([(function(a){}),(b=>{}),(function(c){}),(d=>{})])')
-    assert.equal(bundle.testJsWebpackLike2.code, 'chunk.push([{1:(function(a){}),2:(b=>{}),x:(function(a){}),y:(b=>{})}])')
-    assert.equal(bundle.testCss.code, '.root{display:block}')
+  it('smoke', function () {
+    assert.equal(
+      optimizeJs('var x=function(){}()'),
+      'var x=(function(){})()'
+    )
+    assert.equal(
+      optimizeJs('var do1=function(){},do2=()=>{},dont1=function dont1(){}'),
+      'var do1=(function(){}),do2=(()=>{}),dont1=function dont1(){}'
+    )
+    assert.equal(
+      optimizeJs('[].concat([function(a){},b=>{},(function(c){}),(d=>{})])'),
+      '[].concat([(function(a){}),(b=>{}),(function(c){}),(d=>{})])'
+    )
+    assert.equal(
+      optimizeJs('chunk.push([{1:function(a){},2:b=>{},x:function(a){},y:b=>{}}])'),
+      'chunk.push([{1:(function(a){}),2:(b=>{}),x:(function(a){}),y:(b=>{})}])'
+    )
   })
 
   testCases.forEach(function (testCase) {
