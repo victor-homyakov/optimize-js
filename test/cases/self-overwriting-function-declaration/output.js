@@ -1,24 +1,24 @@
-const fn1 = function (e) {
+const fn1 = (function (e) {
   function  c  () {
-    e.exports = c = function () {
+    e.exports = c = (function () {
       return 'result'
-    }
+    })
     return c()
   }
 
   e.exports = c
-};
+});
 
-const fn2 = function (e) {
+const fn2 = (function (e) {
   function cde() {
-    e.exports = cde = function () {
+    e.exports = cde = (function () {
       return 'result'
-    }
+    })
     return cde()
   }
 
   e.exports = cde
-};
+});
 
 const mod = {}
 fn1(mod)

@@ -19,13 +19,21 @@ describe('main test suite', function () {
   it('test optimizeJsRollupPlugin', function () {
     const plugin = optimizeJsRollupPlugin()
     const bundle = {
-      testJs: {
+      testJsIIFE: {
         fileName: 'test.js',
-        code: 'function x(){}'
+        code: 'var x=function(){}()'
       },
-      testJs2: {
-        fileName: 'test2.js',
-        code: '[].concat([function(a){},function(b){}])'
+      testJsFnExpr: {
+        fileName: 'test.js',
+        code: 'var do1=function(){},do2=()=>{},dont1=function dont1(){}'
+      },
+      testJsWebpackLike1: {
+        fileName: 'test.js',
+        code: '[].concat([function(a){},b=>{},(function(c){}),(d=>{})])'
+      },
+      testJsWebpackLike2: {
+        fileName: 'test.js',
+        code: 'chunk.push([{1:function(a){},2:b=>{},x:function(a){},y:b=>{}}])'
       },
       testCss: {
         fileName: 'test.css',
@@ -33,8 +41,10 @@ describe('main test suite', function () {
       }
     }
     plugin.generateBundle({}, bundle)
-    assert.equal(bundle.testJs.code, 'function x(){}')
-    assert.equal(bundle.testJs2.code, '[].concat([(function(a){}),(function(b){})])')
+    assert.equal(bundle.testJsIIFE.code, 'var x=(function(){})()')
+    assert.equal(bundle.testJsFnExpr.code, 'var do1=(function(){}),do2=(()=>{}),dont1=function dont1(){}')
+    assert.equal(bundle.testJsWebpackLike1.code, '[].concat([(function(a){}),(b=>{}),(function(c){}),(d=>{})])')
+    assert.equal(bundle.testJsWebpackLike2.code, 'chunk.push([{1:(function(a){}),2:(b=>{}),x:(function(a){}),y:(b=>{})}])')
     assert.equal(bundle.testCss.code, '.root{display:block}')
   })
 

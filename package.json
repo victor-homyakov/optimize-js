@@ -44,7 +44,8 @@
   "standard": {
     "ignore": [
       "test/cases/**",
-      "benchmarks/**"
+      "benchmarks/**",
+      "v8-deopt-viewer/**"
     ]
   },
   "repository": {
