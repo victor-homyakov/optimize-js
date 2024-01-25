@@ -1,21 +1,19 @@
-optimize-js [![Build Status](https://travis-ci.org/nolanlawson/optimize-js.svg?branch=master)](https://travis-ci.org/nolanlawson/optimize-js) [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+optimize-js [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 ========
 
 Optimize a JavaScript file for faster initial execution and parsing, by wrapping all immediately-invoked functions or likely-to-be-invoked functions in parentheses.
 
-_**⚠️ Maintenance note ⚠️** This project is unmaintained. I consider it an interesting experiment, but I have no intention to keep updating the benchmark results with every new browser release, or to add new features. I invite folks to keep using it, but to be aware that they should heavily benchmark their own websites to ensure it's actually a significant performance improvement in their target browsers._
-
-_**Update** The V8 team wrote [a blog post](https://v8.dev/blog/preparser#pife) about why you probably shouldn't use optimize-js anymore._
+[A blog post](https://v8.dev/blog/preparser#pife) from the V8 team with some details.
 
 Install
 ---
 
-    npm install -g optimize-js
+    npm install -g optimize-js-code-cache
 
 Usage
 ---
 
-    optimize-js input.js > output.js
+    optimize-js-code-cache input.js > output.js
 
 Example input:
 
@@ -51,29 +49,29 @@ CLI
 ----
 
 ```
-Usage: optimize-js [ options ]
+Usage: optimize-js-code-cache [ options ]
 
 Options:
   --source-map  include source map                                     [boolean]
   -h, --help    Show help                                              [boolean]
 
 Examples:
-  optimize-js input.js > output.js    optimize input.js
-  optimize-js < input.js > output.js  read from stdin, write to stdout
+  optimize-js-code-cache input.js > output.js    optimize input.js
+  optimize-js-code-cache < input.js > output.js  read from stdin, write to stdout
 ```
 
 JavaScript API
 ----
 
 ```js
-var optimizeJs = require('optimize-js');
+var optimizeJs = require('optimize-js-code-cache');
 var input = "!function() {console.log('wrap me!')}";
 var output = optimizeJs(input); // "!(function() {console.log('wrap me!')})()"
 ```
 
 You can also pass in arguments:
 ```js
-var optimizeJs = require('optimize-js');
+var optimizeJs = require('optimize-js-code-cache');
 var input = "!function() {console.log('wrap me!')}";
 var output = optimizeJs(input, {
   sourceMap: true
@@ -112,7 +110,7 @@ as a full parse. This means that the JavaScript code runs much more slowly overa
 
 Luckily, because the `'('` optimization for IIFEs is so well-established, we can exploit this during our build process by
 parsing the entire JavaScript file in advance (a luxury the browser can't afford) and inserting parentheses in the cases where we _know_
-the function will be immediately executed (or where we have a good hunch). That's what `optimize-js` does.
+the function will be immediately executed (or where we have a good hunch). That's what `optimize-js-code-cache` does.
 
 More details on the IIFE optimization can be found in [this discussion](https://github.com/mishoo/UglifyJS2/issues/886). Some of my thoughts on the virtues of compile-time optimizations can be found in [this post](https://gist.github.com/nolanlawson/e73c61da78ffb39e4fc034a62ce8b263).
 
@@ -129,11 +127,11 @@ The current implementation is to parse to a syntax tree and check for functions 
 The first method is an easy win – those functions are immediately executed. The second method is more of a heuristic, but tends
 to be a safe bet given common patterns like Node-style errbacks, Promise chains, and UMD/Browserify/Webpack module declarations. 
 
-In all such cases, `optimize-js` wraps the function in parentheses.
+In all such cases, `optimize-js-code-cache` wraps the function in parentheses.
 
 ### But... you're adding bytes!
 
-Yes, `optimize-js` might add as many as two bytes (horror!) per function, which amounts to practically nil once you
+Yes, `optimize-js-code-cache` might add as many as two bytes (horror!) per function, which amounts to practically nil once you
 take gzip into account. To prove it, here are the gzipped sizes for the libraries I use in the benchmark:
 
 | Script | Size (bytes) | Difference (bytes) |
@@ -151,12 +149,12 @@ take gzip into account. To prove it, here are the gzipped sizes for the librarie
 | benchmarks/three.min.js | 486996 ||
 | benchmarks/three.min.optimized.js | 487279 |+ 283 |
 
-### Is `optimize-js` intended for library authors?
+### Is `optimize-js-code-cache` intended for library authors?
 
-Sure! If you are already shipping a bundled, minified version of your library, then there's no reason not to apply `optimize-js` (assuming you benchmark your code to ensure it does indeed help!). However, note that `optimize-js` should run _after_ Uglify, since Uglify strips extra parentheses and also [negates IIFEs by default](https://github.com/mishoo/UglifyJS2/issues/640). This also means that if your users apply Uglification to your bundle, then the optimization will be undone.
+Sure! If you are already shipping a bundled, minified version of your library, then there's no reason not to apply `optimize-js-code-cache` (assuming you benchmark your code to ensure it does indeed help!). However, note that `optimize-js-code-cache` should run _after_ Uglify, since Uglify strips extra parentheses and also [negates IIFEs by default](https://github.com/mishoo/UglifyJS2/issues/640). This also means that if your users apply Uglification to your bundle, then the optimization will be undone.
 
-Also note that because `optimize-js` optimizes for some patterns that are based on heuristics rather than _known_ eagerly-invoked
-functions, it may actually hurt your performance in some cases. (See benchmarks below for examples.) Be sure to check that `optimize-js` is a help rather than a hindrance for your particular codebase, using something like:
+Also note that because `optimize-js-code-cache` optimizes for some patterns that are based on heuristics rather than _known_ eagerly-invoked
+functions, it may actually hurt your performance in some cases. (See benchmarks below for examples.) Be sure to check that `optimize-js-code-cache` is a help rather than a hindrance for your particular codebase, using something like:
 
 ```html
 <script>
@@ -185,20 +183,20 @@ Possibly! This is a free and open-source library, so I encourage anybody to borr
 ### Why not paren-wrap every single function?
 
 As described above, the pre-parsing optimization in browsers is a very good idea for the vast majority of the web, where most functions 
-aren't immediately executed. However, since `optimize-js` knows when your functions are immediately executed (or can make reasonable
+aren't immediately executed. However, since `optimize-js-code-cache` knows when your functions are immediately executed (or can make reasonable
 guesses), it can be more judicious in applying the paren hack.
 
 ### Does this really work for every JavaScript engine?
 
 Based on my tests, this optimization seems to work best for V8 (Chrome), followed by Chakra (Edge), followed by SpiderMonkey (Firefox). For JavaScriptCore (Safari) it seems to be basically a wash, and may actually be a slight regression overall depending on your codebase. (Again, this is why it's important to actually measure on your own codebase, on the browsers you actually target!)
 
-In the case of Chakra, [Uglify-style IIFEs are actually already optimized](https://github.com/mishoo/UglifyJS2/issues/640#issuecomment-247792319), but using `optimize-js` doesn't hurt because a
+In the case of Chakra, [Uglify-style IIFEs are actually already optimized](https://github.com/mishoo/UglifyJS2/issues/640#issuecomment-247792319), but using `optimize-js-code-cache` doesn't hurt because a
 function preceded by `'('` still goes into the fast path.
 
 Benchmarks
 ----
 
-These tests were run using a handful of popular libraries, wrapped in `performance.now()` measurements. Each test reported the median of 251 runs. `optimize-js` commit [da51013](https://github.com/nolanlawson/optimize-js/commit/da51013) was tested. Minification was applied using `uglifyjs -mc`, Uglify 2.7.0.
+These tests were run using a handful of popular libraries, wrapped in `performance.now()` measurements. Each test reported the median of 251 runs. `optimize-js-code-cache` commit [da51013](https://github.com/nolanlawson/optimize-js/commit/da51013) was tested. Minification was applied using `uglifyjs -mc`, Uglify 2.7.0.
 
 You can also try [a live version of the benchmark](https://nolanlawson.github.io/optimize-js/).
 
@@ -299,13 +297,5 @@ npm run coverage
 Changelog
 ----
 
-- v1.0.3
-  - Much more accurate benchmark ([#37](https://github.com/nolanlawson/optimize-js/issues/37))
-  - Browserify-specific fixes ([#29](https://github.com/nolanlawson/optimize-js/issues/29), [#36](https://github.com/nolanlawson/optimize-js/issues/36), [#39](https://github.com/nolanlawson/optimize-js/issues/39))
-  - Webpack-specific fixes ([#7](https://github.com/nolanlawson/optimize-js/issues/7), [#34](https://github.com/nolanlawson/optimize-js/issues/34))
-- v1.0.2
-  - Use estree-walker to properly parse ES6 ([#31](https://github.com/nolanlawson/optimize-js/issues/31))
-- v1.0.1:
-  - Don't call process.exit(0) on success ([#11](https://github.com/nolanlawson/optimize-js/issues/11))
 - v1.0.0
   - Initial release
