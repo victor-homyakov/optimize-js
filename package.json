@@ -1,6 +1,6 @@
 {
   "name": "optimize-js-code-cache",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Optimize JavaScript execution/parsing by wrapping function expressions",
   "main": "lib/index.js",
   "scripts": {
