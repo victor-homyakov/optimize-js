@@ -50,10 +50,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nolanlawson/optimize-js.git"
+    "url": "git+https://github.com/victor-homyakov/optimize-js.git"
   },
   "bugs": {
-    "url": "https://github.com/nolanlawson/optimize-js/issues"
+    "url": "https://github.com/victor-homyakov/optimize-js/issues"
   },
-  "homepage": "https://github.com/nolanlawson/optimize-js#readme"
+  "homepage": "https://github.com/victor-homyakov/optimize-js#readme"
 }
