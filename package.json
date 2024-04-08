@@ -1,7 +1,7 @@
 {
   "name": "optimize-js-code-cache",
-  "version": "1.0.3",
-  "description": "Optimize JavaScript execution/parsing by wrapping function expressions",
+  "version": "1.1.0",
+  "description": "Optimize JavaScript execution/parsing by wrapping functions",
   "main": "lib/index.js",
   "scripts": {
     "test": "standard && mocha --timeout 60000 test/test.js",

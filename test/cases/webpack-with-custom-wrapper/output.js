@@ -3,9 +3,9 @@ _require(['react'], (function () {
     (function (e, t, n) {
     }),
     (function (e, t) {
-      function n () {
+      var n=(function () {
         return 1
-      }
+      });
 
       e.exports = n, e.exports.__esModule = !0, e.exports.default = e.exports
     }),

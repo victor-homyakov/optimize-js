@@ -64,8 +64,32 @@ CLI
 Usage: optimize-js-code-cache [ options ]
 
 Options:
-  --source-map  include source map                                     [boolean]
-  -h, --help    Show help                                              [boolean]
+      --version                             Show version number        [boolean]
+      --source-map, --sourceMap             Include source map         [boolean]
+      --ecma-version, --ecmaVersion         The ECMAScript version to parse.
+                                            Must be either 3, 5, 6 (or 2015), 7
+                                            (2016), 8 (2017), 9 (2018), 10
+                                            (2019), 11 (2020), 12 (2021), 13
+                                            (2022), 14 (2023), or "latest" (the
+                                            latest version the library
+                                            supports). This influences support
+                                            for strict mode, the set of reserved
+                                            words, and support for new syntax
+                                            features.
+     [choices: 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 2015, 2016, 2017, 2018,
+                                   2019, 2020, 2021, 2022, 2023, 2024, "latest"]
+      --handle-function-declarations,       Specify how to handle
+      --handleFunctionDeclarations          FunctionDeclaration nodes: "none"
+                                            skips them completely; "unsafe"
+                                            wraps all declarations; "safe" wraps
+                                            only declarations that are not used
+                                            before declaration and thus
+                                            preserves hoisting (that otherwise
+                                            can result in broken code, when the
+                                            function is called before being
+                                            assigned to variable).
+                                             [choices: "none", "safe", "unsafe"]
+  -h, --help                                Show help                  [boolean]
 
 Examples:
   optimize-js-code-cache input.js > output.js    optimize input.js
@@ -82,6 +106,7 @@ const output = optimizeJs(input); // "!(function() {console.log('wrap me!')})()"
 ```
 
 You can also pass in arguments:
+
 ```js
 const { optimizeJs } = require('optimize-js-code-cache');
 const input = "!function() {console.log('wrap me!')}";
@@ -100,7 +125,7 @@ The current implementation is to parse to a syntax tree and check for functions 
 
 1. Are immediately-invoked via any kind of call statement (`function(){}()`, `!function(){}()`, etc.)
 2. Are passed in directly as arguments to another function
-3. Are just plain function expressions
+3. Are just plain function expressions or function declarations
 
 The first method is an easy win – those functions are immediately executed. The second method is more of a heuristic, but tends
 to be a safe bet given common patterns like Node-style errbacks, Promise chains, and UMD/Browserify/Webpack module declarations.
@@ -110,8 +135,8 @@ In all such cases, `optimize-js-code-cache` wraps the function in parentheses.
 
 ### But... you're adding bytes!
 
-Yes, `optimize-js-code-cache` might add as many as two bytes (horror!) per function, which amounts to practically nil once you
-take gzip into account.
+Yes, `optimize-js-code-cache` might add as many as two bytes (horror!) per function expression and up to seven bytes per
+function declaration, which amounts to practically nil once you take gzip into account.
 
 ### Is `optimize-js-code-cache` intended for library authors?
 

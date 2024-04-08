@@ -10,12 +10,6 @@ const benchmarkLibs = fs.readdirSync('benchmarks').filter(function (script) {
 })
 
 describe('main test suite', function () {
-  it('test sourcemaps', function () {
-    const res = optimizeJs('var baz = function () { console.log("foo") }()', { sourceMap: true })
-    assert.equal(res, 'var baz = (function () { console.log("foo") })()' +
-      '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxXQUFVLG1DQUFrQyJ9')
-  })
-
   it('smoke', function () {
     assert.equal(
       optimizeJs('var x=function(){}()'),
@@ -53,6 +47,31 @@ describe('main test suite', function () {
       return fs.promises.readFile('benchmarks/' + script, 'utf8').then(function (input) {
         optimizeJs(input) // ensure no crashes
       })
+    })
+  })
+})
+
+describe('options', function () {
+  it('sourceMap', function () {
+    const res = optimizeJs('var baz = function () { console.log("foo") }()', { sourceMap: true })
+    assert.equal(res, 'var baz = (function () { console.log("foo") })()' +
+      '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxXQUFVLG1DQUFrQyJ9')
+  })
+
+  describe('handleFunctionDeclarations', function () {
+    it('skips FunctionDeclarations, if set to "none"', function () {
+      const res = optimizeJs('function a(){}', { handleFunctionDeclarations: 'none' })
+      assert.equal(res, 'function a(){}')
+    })
+
+    it('handles all FunctionDeclarations, if set to "unsafe"', function () {
+      const res = optimizeJs('a(); function a(){} function b(){} b();', { handleFunctionDeclarations: 'unsafe' })
+      assert.equal(res, 'a(); var a=(function(){}); var b=(function(){}); b();')
+    })
+
+    it('preserves FunctionDeclarations for functions used before declaration, if set to "safe"', function () {
+      const res = optimizeJs('a(); function a(){} function b(){} b();', { handleFunctionDeclarations: 'safe' })
+      assert.equal(res, 'a(); function a(){} var b=(function(){}); b();')
     })
   })
 })

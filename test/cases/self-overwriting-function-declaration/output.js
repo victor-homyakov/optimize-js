@@ -1,21 +1,21 @@
 const fn1 = (function (e) {
-  function  c  () {
+  var c=(function   () {
     e.exports = c = (function () {
       return 'result'
     })
     return c()
-  }
+  });
 
   e.exports = c
 });
 
 const fn2 = (function (e) {
-  function cde() {
+  var cde=(function() {
     e.exports = cde = (function () {
       return 'result'
     })
     return cde()
-  }
+  });
 
   e.exports = cde
 });
